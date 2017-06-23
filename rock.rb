@@ -5,6 +5,7 @@ require 'launchy'
 # Song Class
 class Song
   attr_reader :name, :musixmatch_id, :spotify_id, :words
+
   def initialize(name, musixmatch_id, spotify_id, words)
     @name = name
     @musixmatch_id = musixmatch_id
@@ -63,9 +64,9 @@ puts 'Which song do you want?
 (4) Bad Liar'
 
 song = gets.chomp
-
+songs[song].play
 puts "**************************************************
-          SONG NAME : #{songs[song].name}
+          SONG NAME: #{songs[song].name}
 **************************************************"
 
 puts songs[song].lyric
@@ -74,18 +75,18 @@ puts '**************************************************'
 puts '                   LYRIC END                       '
 puts '**************************************************'
 
-puts 'Write the words separated by commas'
+print 'Write the words separated by commas: '
 words = gets.chomp.split(',')
-solution = songs[song].words
+
 guessed = []
 
-solution.each_with_index do |word, index|
+songs[song].words.each_with_index do |word, index|
   guessed[index] = word == words.fetch(index) ? 1 : 0
 end
 
 guessed.each_with_index do |val, index|
   state = val == 1 ? 'correct' : 'incorrect'
-  puts "Word number #{index + 1} => #{state} : #{solution.fetch(index)} "
+  puts "Word number #{index + 1} => #{state} : #{songs[song].words.fetch(index)} "
 end
 
 puts "Your score is #{guessed.sum}/4"
