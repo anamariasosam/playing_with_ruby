@@ -25,7 +25,7 @@ class Song
 
     lyric = data['message']['body']['lyrics']['lyrics_body']
 
-    @words.each { |e| lyric[e] = '________' }
+    @words.each { |e| lyric[e] = '_' * e.length }
 
     lyric
   end
