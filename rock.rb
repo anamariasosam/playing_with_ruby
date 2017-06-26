@@ -4,15 +4,9 @@ require 'launchy'
 
 # Song Class
 class Song
+  attr_accessor :name, :musixmatch_id, :spotify_id, :words
   attr_reader :name, :musixmatch_id, :spotify_id, :words
 
-  def initialize(name, musixmatch_id, spotify_id, words)
-    @name = name
-    @musixmatch_id = musixmatch_id
-    @spotify_id = spotify_id
-    @words = words
-    @lyric = lyric
-  end
 
   def lyric
     url = 'http://api.musixmatch.com/ws/1.1/track.lyrics.get'
@@ -37,32 +31,10 @@ end
 
 # Game Class
 class Game
-  def initialize(score)
+  def initialize(score: 0)
     @score = score
   end
 end
-
-s1 = Song.new('Wild Thoughts',
-              '130727382',
-              '4IIUaKqGMElZ3rGtuvYlNc',
-              %w[baby wasted thoughts hope])
-
-s2 = Song.new('Slow Hands',
-              '129347748',
-              '167NczpNbRF7oWakJaY3Hh',
-              %w[said thinking hands leaving])
-
-s3 = Song.new('Im the One',
-              '130727383',
-              '72Q0FQQo32KJloivv5xge2',
-              %w[money sick only promise])
-
-s4 = Song.new('Bad Liar',
-              '129971067',
-              '1sCxVKWImDZSZKvG0U9B23',
-              %w[street someone rent watch])
-
-songs = { '1' => s1, '2' => s2, '3' => s3, '4' => s4 }
 
 puts 'Which song do you want?
 (1) Wild Thoughts
@@ -70,13 +42,37 @@ puts 'Which song do you want?
 (3) Im the One
 (4) Bad Liar'
 
-song = gets.chomp
-songs[song].play
+selected_song = gets.chomp.to_i
+
+song = Song.new
+case selected_song
+when 1
+  song.name = 'Wild Thoughts'
+  song.musixmatch_id = '130727382'
+  song.spotify_id = '4IIUaKqGMElZ3rGtuvYlNc'
+  song.words = %w[baby wasted thoughts hope]
+when 2
+  song.name = 'Slow Hands'
+  song.musixmatch_id = '129347748'
+  song.spotify_id = '167NczpNbRF7oWakJaY3Hh'
+  song.words = %w[said thinking hands leaving]
+when 3
+  song.name = 'Im the One'
+  song.musixmatch_id = '130727383'
+  song.spotify_id = '72Q0FQQo32KJloivv5xge2'
+  song.words = %w[money sick only promise]
+when 4
+  song.name = 'Bad Liar'
+  song.musixmatch_id = '129971067'
+  song.spotify_id = '1sCxVKWImDZSZKvG0U9B23'
+  song.words = %w[street someone rent watch]
+end
+
 puts "**************************************************
-          SONG NAME: #{songs[song].name}
+          SONG NAME: #{song.name}
 **************************************************"
 
-puts songs[song].lyric
+puts song.lyric
 
 puts '**************************************************'
 puts '                   LYRIC END                       '
@@ -87,13 +83,13 @@ words = gets.chomp.split(',')
 
 guessed = []
 
-songs[song].words.each_with_index do |word, index|
+song.words.each_with_index do |word, index|
   guessed[index] = word == words.fetch(index) ? 1 : 0
 end
 
 guessed.each_with_index do |val, index|
   state = val == 1 ? 'correct' : 'incorrect'
-  puts "Word number #{index + 1} => #{state} : #{songs[song].words.fetch(index)} "
+  puts "Word number #{index + 1} => #{state} : #{song.words.fetch(index)} "
 end
 
 puts "Your score is #{guessed.sum}/4"
