@@ -35,6 +35,13 @@ class Song
   end
 end
 
+# Game Class
+class Game
+  def initialize(score)
+    @score = score
+  end
+end
+
 s1 = Song.new('Wild Thoughts',
               '130727382',
               '4IIUaKqGMElZ3rGtuvYlNc',
