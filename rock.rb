@@ -5,8 +5,6 @@ require 'launchy'
 # Song Class
 class Song
   attr_accessor :name, :musixmatch_id, :spotify_id, :words
-  attr_reader :name, :musixmatch_id, :spotify_id, :words
-
 
   def lyric
     url = 'http://api.musixmatch.com/ws/1.1/track.lyrics.get'
@@ -14,6 +12,7 @@ class Song
       'track_id' => @musixmatch_id,
       'apikey' => 'c4caa5ba22a90e53f85590fdecf2347d'
     }
+
     response = HTTParty.get(url, query: query)
     data = JSON.parse(response.body)
 
