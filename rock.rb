@@ -28,13 +28,6 @@ class Song
   end
 end
 
-# Game Class
-class Game
-  def initialize(score: 0)
-    @score = score
-  end
-end
-
 puts 'Which song do you want?
 (1) Wild Thoughts
 (2) Slow Hands
@@ -77,18 +70,41 @@ puts '**************************************************'
 puts '                   LYRIC END                       '
 puts '**************************************************'
 
-print 'Write the words separated by commas: '
-words = gets.chomp.split(',')
 
-guessed = []
 
-song.words.each_with_index do |word, index|
-  guessed[index] = word == words.fetch(index) ? 1 : 0
+# Game Class
+class Game
+  attr_reader :score
+  def initialize(score: 0, words: [], solution: [])
+    @score = score
+    @words = words
+    @solution = solution
+  end
+
+  def write_words
+    print 'Write the words separated by commas: '
+    @words = gets.chomp.split(',')
+  end
+
+  def guessed
+    guessed = []
+    @solution.each_with_index do |word, index|
+      guessed[index] = word == @words.fetch(index) ? 1 : 0
+    end
+    guessed
+  end
+
+  def score
+    @score = guessed.sum
+  end
 end
 
-guessed.each_with_index do |val, index|
-  state = val == 1 ? 'correct' : 'incorrect'
-  puts "Word number #{index + 1} => #{state} : #{song.words.fetch(index)} "
-end
+game = Game.new(solution: song.words)
 
-puts "Your score is #{guessed.sum}/4"
+game.write_words
+# guessed.each_with_index do |val, index|
+#   state = val == 1 ? 'correct' : 'incorrect'
+#   puts "Word number #{index + 1} => #{state} : #{song.words.fetch(index)} "
+# end
+
+puts "Your score is #{game.score}/4"
