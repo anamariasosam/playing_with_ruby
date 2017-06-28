@@ -2,6 +2,41 @@ require 'HTTParty'
 require 'json'
 require 'launchy'
 
+wild_thoughts = {
+  'name' => 'Wild Thoughts',
+  'musixmatch_id' => '130727382',
+  'spotify_id' => '4IIUaKqGMElZ3rGtuvYlNc',
+  'words' => %w[baby wasted thoughts hope]
+}
+
+slow_hands = {
+  'name' => 'Slow Hands',
+  'musixmatch_id' => '129347748',
+  'spotify_id' => '167NczpNbRF7oWakJaY3Hh',
+  'words' => %w[said thinking hands leaving]
+}
+
+the_one = {
+  'name' => 'Im the One',
+  'musixmatch_id' => '130727383',
+  'spotify_id' => '72Q0FQQo32KJloivv5xge2',
+  'words' => %w[money sick only promise]
+}
+
+bad_liar = {
+  'name' => 'Bad Liar',
+  'musixmatch_id' => '129971067',
+  'spotify_id' => '1sCxVKWImDZSZKvG0U9B23',
+  'words' => %w[street someone rent watch]
+}
+
+$songs = {
+  '1' => wild_thoughts,
+  '2' => slow_hands,
+  '3' => the_one,
+  '4' => bad_liar
+}
+
 # Song Class
 class Song
   attr_accessor :name, :musixmatch_id, :spotify_id, :words
@@ -28,62 +63,50 @@ class Song
   end
 end
 
-puts 'Which song do you want?
-(1) Wild Thoughts
-(2) Slow Hands
-(3) Im the One
-(4) Bad Liar'
-
-selected_song = gets.chomp.to_i
-
-song = Song.new
-case selected_song
-when 1
-  song.name = 'Wild Thoughts'
-  song.musixmatch_id = '130727382'
-  song.spotify_id = '4IIUaKqGMElZ3rGtuvYlNc'
-  song.words = %w[baby wasted thoughts hope]
-when 2
-  song.name = 'Slow Hands'
-  song.musixmatch_id = '129347748'
-  song.spotify_id = '167NczpNbRF7oWakJaY3Hh'
-  song.words = %w[said thinking hands leaving]
-when 3
-  song.name = 'Im the One'
-  song.musixmatch_id = '130727383'
-  song.spotify_id = '72Q0FQQo32KJloivv5xge2'
-  song.words = %w[money sick only promise]
-when 4
-  song.name = 'Bad Liar'
-  song.musixmatch_id = '129971067'
-  song.spotify_id = '1sCxVKWImDZSZKvG0U9B23'
-  song.words = %w[street someone rent watch]
-end
-
-puts "**************************************************
-          SONG NAME: #{song.name}
-**************************************************"
-
-puts song.lyric
-
-puts '**************************************************'
-puts '                   LYRIC END                       '
-puts '**************************************************'
-
-
-
 # Game Class
 class Game
-  attr_reader :score
   def initialize(score: 0, words: [], solution: [])
     @score = score
     @words = words
     @solution = solution
   end
 
+  def start
+    puts 'Which song do you want?
+    (1) Wild Thoughts
+    (2) Slow Hands
+    (3) Im the One
+    (4) Bad Liar'
+
+    create_song(gets.chomp)
+  end
+
+  def create_song(selected_song)
+    song = $songs[selected_song]
+
+    s = Song.new
+    s.name = song['name']
+    s.musixmatch_id = song['musixmatch_id']
+    s.spotify_id = song['spotify_id']
+    s.words = song['words']
+    s.play
+
+    @solution = s.words
+
+    print_song(s)
+  end
+
+  def print_song(song)
+    puts '**************************************************'
+    puts song.name.upcase, song.lyric
+    puts '**************************************************'
+  end
+
   def write_words
-    print 'Write the words separated by commas: '
-    @words = gets.chomp.split(',')
+    (1..4).each do |i|
+      print "Write the word number #{i}: "
+      @words.push(gets.chomp.downcase)
+    end
   end
 
   def guessed
@@ -91,20 +114,28 @@ class Game
     @solution.each_with_index do |word, index|
       guessed[index] = word == @words.fetch(index) ? 1 : 0
     end
+    @score = guessed.sum
+
     guessed
   end
 
-  def score
-    @score = guessed.sum
+  def result
+    guessed.each_with_index do |val, index|
+      if val == 1
+        result = 'correct'
+      else
+        result = 'incorrect'
+        answer = "- the answer is '#{@solution.fetch(index)}'"
+      end
+
+      puts "Word number #{index + 1} is #{result} #{answer}"
+    end
+
+    puts "Your score is #{@score}/4"
   end
 end
 
-game = Game.new(solution: song.words)
-
+game = Game.new
+game.start
 game.write_words
-# guessed.each_with_index do |val, index|
-#   state = val == 1 ? 'correct' : 'incorrect'
-#   puts "Word number #{index + 1} => #{state} : #{song.words.fetch(index)} "
-# end
-
-puts "Your score is #{game.score}/4"
+game.result
