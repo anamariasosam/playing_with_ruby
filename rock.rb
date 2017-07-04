@@ -1,3 +1,5 @@
+# @author Ana Sosa
+
 require 'HTTParty'
 require 'json'
 require 'launchy'
@@ -72,12 +74,13 @@ class Game
   end
 
   def start
-    puts 'Which song do you want?
+    puts 'Figure out the lyrics of this songs, choose one to start:
     (1) Wild Thoughts
     (2) Slow Hands
     (3) Im the One
     (4) Bad Liar'
 
+    # FIXME: This has crashed when the user does not select a number between 1-4
     create_song(gets.chomp)
   end
 
@@ -112,26 +115,23 @@ class Game
   def guessed
     guessed = []
     @solution.each_with_index do |word, index|
-      guessed[index] = word == @words.fetch(index) ? 1 : 0
+      guessed[index] = word == @words.fetch(index) ? true : false
     end
-    @score = guessed.sum
-
     guessed
   end
 
   def result
-    guessed.each_with_index do |val, index|
-      if val == 1
+    guessed.each_with_index do |is_correct, index|
+      if is_correct
         result = 'correct'
+        @score += 1
       else
-        result = 'incorrect'
-        answer = "- the answer is '#{@solution.fetch(index)}'"
+        result = "incorrect - the answer is '#{@solution.fetch(index)}'"
       end
 
-      puts "Word number #{index + 1} is #{result} #{answer}"
+      puts "Word number #{index + 1} is #{result}"
     end
-
-    puts "Your score is #{@score}/4"
+    puts "Your score is #{@score}/#{@solution.length}"
   end
 end
 
